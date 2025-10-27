@@ -1,542 +1,314 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rhino & Grasshopper Learning Hub</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* Modern Teal/Orange/Gray color scheme, improved accessibility */
+:root {
+    --primary: #13c8a8;
+    --secondary: #ff9800;
+    --background: #f5f6fa;
+    --surface: #fff;
+    --text-main: #1d222b;
+    --text-light: #666;
+    --accent: #ff9800;
+    --gradient: linear-gradient(135deg, #13c8a8 0%, #ff9800 100%);
+    --shadow: 0 4px 14px rgba(20,40,60,0.08);
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            overflow-x: hidden;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--gradient);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
 
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+.header {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    padding: 1.2rem 2rem;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+}
 
-        .nav-links a:hover {
-            color: #667eea;
-        }
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 500;
+    transition: color 0.3s;
+}
 
-        .hero {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: white;
-        }
+.nav-links a:hover,
+.nav-links a:focus {
+    color: var(--primary);
+    outline: none;
+}
 
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            animation: fadeInUp 0.8s ease;
-        }
+.hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--surface);
+}
 
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-            animation: fadeInUp 0.8s ease 0.2s both;
-        }
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.8s ease;
+}
 
-        .cta-btn {
-            background: white;
-            color: #667eea;
-            padding: 1rem 2.5rem;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            animation: fadeInUp 0.8s ease 0.4s both;
-        }
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
 
-        .cta-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
+.cta-btn {
+    background: var(--primary);
+    color: var(--surface);
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    animation: fadeInUp 0.8s ease 0.4s both;
+}
+.cta-btn:hover,
+.cta-btn:focus {
+    background: var(--secondary);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    outline: none;
+}
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
 
-        .section {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        }
+.section {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
 
-        .section-title {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: #667eea;
-            text-align: center;
-        }
+.section-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+    text-align: center;
+}
 
-        .course-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
 
-        .course-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
-            padding: 2rem;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
+.course-card {
+    background: var(--background);
+    border-radius: 15px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 10px rgba(20,40,60,0.06);
+}
 
-        .course-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
+.course-card:hover,
+.course-card:focus {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow);
+    outline: none;
+}
 
-        .course-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
+.course-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+}
 
-        .course-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
+.course-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
 
-        .course-card p {
-            color: #666;
-            line-height: 1.6;
-        }
+.course-card p {
+    color: var(--text-light);
+    line-height: 1.6;
+}
 
-        .difficulty {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-top: 1rem;
-        }
+.difficulty {
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+.beginner { background: #13c8a8; color: white; }
+.intermediate { background: #ff9800; color: #fff; }
+.advanced { background: #e14a4a; color: white; }
 
-        .beginner { background: #4ade80; color: white; }
-        .intermediate { background: #facc15; color: #333; }
-        .advanced { background: #f87171; color: white; }
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+}
 
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #e5e7eb;
-        }
+.tab {
+    padding: 1rem 2rem;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: color 0.3s, border-bottom 0.3s;
+    border-bottom: 3px solid transparent;
+}
+.tab.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+}
 
-        .tab {
-            padding: 1rem 2rem;
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: color 0.3s, border-bottom 0.3s;
-            border-bottom: 3px solid transparent;
-        }
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
 
-        .tab.active {
-            color: #667eea;
-            border-bottom: 3px solid #667eea;
-        }
+.lesson-list {
+    list-style: none;
+}
+.lesson-item {
+    background: var(--background);
+    padding: 1.1rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s;
+}
+.lesson-item:hover,
+.lesson-item:focus {
+    background: #e6f7f2;
+    outline: none;
+}
+.lesson-number {
+    background: var(--primary);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+.lesson-info {
+    flex: 1;
+}
+.lesson-title {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+.lesson-duration {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+.start-btn {
+    background: var(--secondary);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+.start-btn:hover,
+.start-btn:focus {
+    background: #ffab40;
+    outline: none;
+}
 
-        .tab-content {
-            display: none;
-        }
+.resources {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+}
 
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
+.resource-card {
+    background: var(--primary);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+.resource-card:hover,
+.resource-card:focus {
+    transform: scale(1.05);
+    outline: none;
+}
+.resource-icon {
+    font-size: 2rem;
+    margin-bottom: 0.7rem;
+}
 
-        .lesson-list {
-            list-style: none;
-        }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 
-        .lesson-item {
-            background: #f9fafb;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s;
-        }
+@media (max-width: 900px) {
+    .container { padding: 2rem 1rem; }
+    .course-grid, .resources { grid-template-columns: 1fr; }
+}
 
-        .lesson-item:hover {
-            background: #f3f4f6;
-        }
-
-        .lesson-number {
-            background: #667eea;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 1rem;
-        }
-
-        .lesson-info {
-            flex: 1;
-        }
-
-        .lesson-title {
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-
-        .lesson-duration {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .start-btn {
-            background: #667eea;
-            color: white;
-            padding: 0.6rem 1.5rem;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .start-btn:hover {
-            background: #5568d3;
-        }
-
-        .resources {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .resource-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-
-        .resource-card:hover {
-            transform: scale(1.05);
-        }
-
-        .resource-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .nav-links { gap: 1rem; }
-            .course-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <nav class="nav">
-            <div class="logo">🦏 RhinoGH Academy</div>
-            <ul class="nav-links">
-                <li><a href="#courses">Courses</a></li>
-                <li><a href="#tutorials">Tutorials</a></li>
-                <li><a href="#resources">Resources</a></li>
-                <li><a href="#community">Community</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section class="hero">
-        <h1>Master Rhino & Grasshopper</h1>
-        <p>Learn computational design and parametric modeling from beginner to advanced</p>
-        <button class="cta-btn" onclick="scrollToSection('courses')">Start Learning</button>
-    </section>
-
-    <div class="container">
-        <section id="courses" class="section">
-            <h2 class="section-title">Learning Paths</h2>
-            <div class="course-grid">
-                <div class="course-card" onclick="selectCourse('rhino')">
-                    <div class="course-icon">🦏</div>
-                    <h3>Rhino 3D Fundamentals</h3>
-                    <p>Master the basics of 3D modeling with Rhino. Learn curves, surfaces, solids, and essential tools.</p>
-                    <span class="difficulty beginner">Beginner</span>
-                </div>
-                <div class="course-card" onclick="selectCourse('grasshopper')">
-                    <div class="course-icon">🦗</div>
-                    <h3>Grasshopper Basics</h3>
-                    <p>Introduction to visual programming and parametric design with Grasshopper.</p>
-                    <span class="difficulty beginner">Beginner</span>
-                </div>
-                <div class="course-card" onclick="selectCourse('advanced')">
-                    <div class="course-icon">🚀</div>
-                    <h3>Advanced Parametric Design</h3>
-                    <p>Complex data structures, optimization algorithms, and advanced Grasshopper techniques.</p>
-                    <span class="difficulty advanced">Advanced</span>
-                </div>
-                <div class="course-card" onclick="selectCourse('architecture')">
-                    <div class="course-icon">🏗️</div>
-                    <h3>Architectural Applications</h3>
-                    <p>Apply Rhino and Grasshopper to real-world architectural projects and workflows.</p>
-                    <span class="difficulty intermediate">Intermediate</span>
-                </div>
-                <div class="course-card" onclick="selectCourse('fabrication')">
-                    <div class="course-icon">🔧</div>
-                    <h3>Digital Fabrication</h3>
-                    <p>Prepare models for 3D printing, CNC milling, and laser cutting.</p>
-                    <span class="difficulty intermediate">Intermediate</span>
-                </div>
-                <div class="course-card" onclick="selectCourse('plugins')">
-                    <div class="course-icon">🔌</div>
-                    <h3>Plugins & Extensions</h3>
-                    <p>Explore powerful plugins like Kangaroo, Pufferfish, Lunchbox, and more.</p>
-                    <span class="difficulty advanced">Advanced</span>
-                </div>
-            </div>
-        </section>
-
-        <section id="tutorials" class="section">
-            <h2 class="section-title">Video Tutorials</h2>
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('rhino-lessons')">Rhino Lessons</button>
-                <button class="tab" onclick="switchTab('gh-lessons')">Grasshopper Lessons</button>
-                <button class="tab" onclick="switchTab('projects')">Project-Based</button>
-            </div>
-
-            <div id="rhino-lessons" class="tab-content active">
-                <ul class="lesson-list">
-                    <li class="lesson-item">
-                        <div class="lesson-number">1</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Interface & Navigation</div>
-                            <div class="lesson-duration">15 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">2</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Drawing Curves & Lines</div>
-                            <div class="lesson-duration">25 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">3</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Creating Surfaces</div>
-                            <div class="lesson-duration">30 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">4</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Solid Modeling Techniques</div>
-                            <div class="lesson-duration">35 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                </ul>
-            </div>
-
-            <div id="gh-lessons" class="tab-content">
-                <ul class="lesson-list">
-                    <li class="lesson-item">
-                        <div class="lesson-number">1</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Grasshopper Interface & Components</div>
-                            <div class="lesson-duration">20 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">2</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Data Types & Data Trees</div>
-                            <div class="lesson-duration">40 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">3</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Parametric Curves & Surfaces</div>
-                            <div class="lesson-duration">35 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">4</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Number Sliders & Parameters</div>
-                            <div class="lesson-duration">25 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                </ul>
-            </div>
-
-            <div id="projects" class="tab-content">
-                <ul class="lesson-list">
-                    <li class="lesson-item">
-                        <div class="lesson-number">1</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Parametric Pavilion Design</div>
-                            <div class="lesson-duration">90 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">2</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Voronoi Pattern Generation</div>
-                            <div class="lesson-duration">60 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                    <li class="lesson-item">
-                        <div class="lesson-number">3</div>
-                        <div class="lesson-info">
-                            <div class="lesson-title">Adaptive Facade System</div>
-                            <div class="lesson-duration">75 minutes</div>
-                        </div>
-                        <button class="start-btn">Start</button>
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="resources" class="section">
-            <h2 class="section-title">Additional Resources</h2>
-            <div class="resources">
-                <div class="resource-card">
-                    <div class="resource-icon">📚</div>
-                    <h3>Documentation</h3>
-                    <p>Official Rhino & Grasshopper documentation and guides</p>
-                </div>
-                <div class="resource-card">
-                    <div class="resource-icon">💬</div>
-                    <h3>Forums</h3>
-                    <p>Join the community and get help from experts</p>
-                </div>
-                <div class="resource-card">
-                    <div class="resource-icon">📦</div>
-                    <h3>Plugin Library</h3>
-                    <p>Discover and download useful plugins</p>
-                </div>
-                <div class="resource-card">
-                    <div class="resource-icon">🎨</div>
-                    <h3>Gallery</h3>
-                    <p>Get inspired by community projects</p>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <script>
-        function switchTab(tabId) {
-            const tabs = document.querySelectorAll('.tab');
-            const contents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        function selectCourse(courseName) {
-            alert(`Starting ${courseName} course! This would navigate to the course page.`);
-        }
-
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
-        }
-
-        document.querySelectorAll('.start-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const lessonTitle = this.parentElement.querySelector('.lesson-title').textContent;
-                alert(`Starting lesson: ${lessonTitle}`);
-            });
-        });
-    </script>
-</body>
-</html>
+@media (max-width: 600px) {
+    .hero h1 { font-size: 2rem; }
+    .section { padding: 1rem; }
+    .nav-links { gap: 0.7rem; }
+    .course-grid, .resources { grid-template-columns: 1fr; }
+}
