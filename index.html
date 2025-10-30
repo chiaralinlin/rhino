@@ -1,320 +1,117 @@
-
-<!-- Correct way: links the CSS, does not show code -->
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rhino & Grasshopper Learning Hub</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <nav class="nav">
+      <div class="logo">Rhino & Grasshopper</div>
+      <ul class="nav-links">
+        <li><a href="https://www.youtube.com/watch?v=-xXuToupPIY&list=PL48k2iKH421iToky9jG7ezc2fYg98dF16" class="cta-btn" target="_blank" style="margin-top:1rem;display:inline-block;" rel="noopener">
+            学习路线</a></li>
+        <li><a href="#resources">资料库</a></li>
+        <li><a href="#contact">联系</a></li>
+      </ul>
+    </nav>
+  </header>
 
-/* Modern Teal/Orange/Gray color scheme, improved accessibility */
-:root {
-    --primary: #13c8a8;
-    --secondary: #ff9800;
-    --background: #f5f6fa;
-    --surface: #fff;
-    --text-main: #1d222b;
-    --text-light: #666;
-    --accent: #ff9800;
-    --gradient: linear-gradient(135deg, #13c8a8 0%, #ff9800 100%);
-    --shadow: 0 4px 14px rgba(20,40,60,0.08);
-}
+  <!-- 炫酷大横幅区 -->
+  <section class="hero">
+    <h1>Rhino & Grasshopper 全能学习站</h1>
+    <p>六大路径，项目驱动，海量资源，玩转参数化设计！</p>
+    <a class="cta-btn" href="#courses">立即开启学习之旅</a>
+  </section>
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+  <main class="container">
+    <!-- 学习路线卡片区 -->
+    <section id="courses" class="section">
+      <h2 class="section-title">学习路线</h2>
+      <div class="course-grid">
+        <div class="course-card" tabindex="0">
+          <div class="course-icon">🦏</div>
+          <h3>Rhino 基础入门</h3>
+          <p>零基础也能飞！模型构建与操作全面讲解。</p>
+          <span class="difficulty beginner">入门</span>
+        </div>
+        <div class="course-card" tabindex="0">
+          <div class="course-icon">🌱</div>
+          <h3>Grasshopper 零基础</h3>
+          <p>拖拽式参数化，逻辑思维与节点实战。</p>
+          <span class="difficulty beginner">入门</span>
+        </div>
+        <div class="course-card" tabindex="0">
+          <div class="course-icon">🧩</div>
+          <h3>建模技巧进阶</h3>
+          <p>探索高级建模命令、疑难案例与效率提升。</p>
+          <span class="difficulty intermediate">进阶</span>
+        </div>
+        <div class="course-card" tabindex="0">
+          <div class="course-icon">📐</div>
+          <h3>算法与脚本开发</h3>
+          <p>Python/C# 脚本助力，开发更高效工作流。</p>
+          <span class="difficulty advanced">高级</span>
+        </div>
+        <div class="course-card" tabindex="0">
+          <div class="course-icon">🎬</div>
+          <h3>实战 - 建筑表皮</h3>
+          <p>由浅入深，带你做出炫酷表皮几何。</p>
+          <span class="difficulty intermediate">项目</span>
+        </div>
+        <div class="course-card" tabindex="0">
+          <div class="course-icon">🏆</div>
+          <h3>作品集冲刺</h3>
+          <p>案例拆解，独立创作，提升你的作品集竞争力。</p>
+          <span class="difficulty advanced">作品</span>
+        </div>
+      </div>
+    </section>
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--gradient);
-    color: var(--text-main);
-    overflow-x: hidden;
-}
+    <!-- 资源资料卡片区 -->
+    <section id="resources" class="section">
+      <h2 class="section-title">资料库</h2>
+      <div class="resources">
+        <div class="resource-card" tabindex="0">
+          <div class="resource-icon">📚</div>
+          <h4>官方文档</h4>
+          <p>Rhino & Grasshopper 官方术语、命令与内置指南</p>
+        </div>
+        <div class="resource-card" tabindex="0">
+          <div class="resource-icon">🎥</div>
+          <h4>精选视频课</h4>
+          <p>实战案例/技巧演示，快速提升操作技能</p>
+        </div>
+        <div class="resource-card" tabindex="0">
+          <div class="resource-icon">🌏</div>
+          <h4>国际社区</h4>
+          <p>参数化生态圈分析，深入交流学习与问答</p>
+        </div>
+        <div class="resource-card" tabindex="0">
+          <div class="resource-icon">🔗</div>
+          <h4>插件工具</h4>
+          <p>GH/犀牛常用插件、高效工作学习利器</p>
+        </div>
+        <div class="resource-card" tabindex="0">
+          <div class="resource-icon">🧑‍💻</div>
+          <h4>脚本资源</h4>
+          <p>实用脚本、定制化节点和自动化工具包资源</p>
+        </div>
+        <div class="resource-card" tabindex="0">
+          <div class="resource-icon">📎</div>
+          <h4>线上课程推荐</h4>
+          <p>系统学习教程、公开课合集与课件下载</p>
+        </div>
+      </div>
+    </section>
+  </main>
 
-.header {
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(10px);
-    padding: 1.2rem 2rem;
-    box-shadow: var(--shadow);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.logo {
-    font-size: 1.8rem;
-    font-weight: bold;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.nav-links {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: var(--text-main);
-    font-weight: 500;
-    transition: color 0.3s;
-}
-
-.nav-links a:hover,
-.nav-links a:focus {
-    color: var(--primary);
-    outline: none;
-}
-
-.hero {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--surface);
-}
-
-.hero h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    animation: fadeInUp 0.8s ease;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    opacity: 0.95;
-    animation: fadeInUp 0.8s ease 0.2s both;
-}
-
-.cta-btn {
-    background: var(--primary);
-    color: var(--surface);
-    padding: 1rem 2.5rem;
-    border: none;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-    animation: fadeInUp 0.8s ease 0.4s both;
-}
-.cta-btn:hover,
-.cta-btn:focus {
-    background: var(--secondary);
-    transform: translateY(-3px);
-    box-shadow: var(--shadow);
-    outline: none;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-}
-
-.section {
-    background: var(--surface);
-    border-radius: 18px;
-    padding: 2.5rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow);
-}
-
-.section-title {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    color: var(--primary);
-    text-align: center;
-}
-
-.course-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.course-card {
-    background: var(--background);
-    border-radius: 15px;
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 2px 10px rgba(20,40,60,0.06);
-}
-
-.course-card:hover,
-.course-card:focus {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow);
-    outline: none;
-}
-
-.course-icon {
-    font-size: 2.5rem;
-    margin-bottom: 0.8rem;
-}
-
-.course-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-main);
-}
-
-.course-card p {
-    color: var(--text-light);
-    line-height: 1.6;
-}
-
-.difficulty {
-    display: inline-block;
-    padding: 0.3rem 0.9rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    margin-top: 1rem;
-}
-.beginner { background: #13c8a8; color: white; }
-.intermediate { background: #ff9800; color: #fff; }
-.advanced { background: #e14a4a; color: white; }
-
-.tabs {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-.tab {
-    padding: 1rem 2rem;
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-light);
-    cursor: pointer;
-    transition: color 0.3s, border-bottom 0.3s;
-    border-bottom: 3px solid transparent;
-}
-.tab.active {
-    color: var(--primary);
-    border-bottom: 3px solid var(--primary);
-}
-
-.tab-content {
-    display: none;
-}
-.tab-content.active {
-    display: block;
-    animation: fadeIn 0.5s ease;
-}
-
-.lesson-list {
-    list-style: none;
-}
-.lesson-item {
-    background: var(--background);
-    padding: 1.1rem;
-    margin-bottom: 1rem;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.3s;
-}
-.lesson-item:hover,
-.lesson-item:focus {
-    background: #e6f7f2;
-    outline: none;
-}
-.lesson-number {
-    background: var(--primary);
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    margin-right: 1rem;
-}
-.lesson-info {
-    flex: 1;
-}
-.lesson-title {
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-}
-.lesson-duration {
-    font-size: 0.9rem;
-    color: var(--text-light);
-}
-.start-btn {
-    background: var(--secondary);
-    color: white;
-    padding: 0.5rem 1.2rem;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s;
-}
-.start-btn:hover,
-.start-btn:focus {
-    background: #ffab40;
-    outline: none;
-}
-
-.resources {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.2rem;
-}
-
-.resource-card {
-    background: var(--primary);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 15px;
-    text-align: center;
-    transition: transform 0.3s;
-}
-.resource-card:hover,
-.resource-card:focus {
-    transform: scale(1.05);
-    outline: none;
-}
-.resource-icon {
-    font-size: 2rem;
-    margin-bottom: 0.7rem;
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px);}
-    to { opacity: 1; transform: translateY(0);}
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@media (max-width: 900px) {
-    .container { padding: 2rem 1rem; }
-    .course-grid, .resources { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 600px) {
-    .hero h1 { font-size: 2rem; }
-    .section { padding: 1rem; }
-    .nav-links { gap: 0.7rem; }
-    .course-grid, .resources { grid-template-columns: 1fr; }
-}
+  <!-- 页脚版权 -->
+  <footer class="header" id="contact" style="text-align:center; background:rgba(255,255,255,0.90); margin-top:2rem;">
+    <div>© 2025 Rhino & Grasshopper Learning Hub | Powered by chiaralinlin</div>
+  </footer>
+</body>
+</html>
