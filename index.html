@@ -1,117 +1,1908 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rhino & Grasshopper Learning Hub</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RhinoGH — Computational Design Knowledge Base</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&family=Libre+Baskerville:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM
+═══════════════════════════════════════════ */
+:root {
+  --bg: #0d0f0e;
+  --bg2: #111410;
+  --bg3: #161a15;
+  --surface: #1c211b;
+  --surface2: #222820;
+  --border: rgba(88,200,100,0.12);
+  --border2: rgba(88,200,100,0.22);
+  --green: #58c864;
+  --green2: #3da84a;
+  --green-dim: rgba(88,200,100,0.08);
+  --green-glow: rgba(88,200,100,0.18);
+  --amber: #e8a840;
+  --blue: #5ba8e8;
+  --text: #e2e8df;
+  --text2: #9aaa94;
+  --text3: #6b7a66;
+  --white: #f0f4ee;
+  --font-mono: 'DM Mono', monospace;
+  --font-sans: 'Syne', sans-serif;
+  --font-serif: 'Libre Baskerville', serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--green2); border-radius: 2px; }
+
+/* ═══════════════════════════════════════════
+   GRID BACKGROUND
+═══════════════════════════════════════════ */
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(88,200,100,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88,200,100,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.grid-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(88,200,100,0.06), transparent 70%);
+}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  height: 60px;
+  background: rgba(13,15,14,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 28px; height: 28px;
+  border: 1.5px solid var(--green);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.nav-logo-mark::before {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  background: var(--green);
+  transform: rotate(45deg) translateY(2px);
+  opacity: 0.9;
+}
+.nav-logo-text {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.5px;
+}
+.nav-logo-text span { color: var(--green); }
+
+.nav-links {
+  display: flex; align-items: center; gap: 2px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 3px;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-links a:hover { color: var(--green); background: var(--green-dim); }
+.nav-links a.active { color: var(--green); }
+
+.nav-cta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--green);
+  border: none;
+  padding: 7px 18px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.15s;
+}
+.nav-cta:hover { background: var(--green2); transform: translateY(-1px); }
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 120px 48px 80px;
+  overflow: hidden;
+}
+
+/* parametric mesh SVG decoration */
+.hero-mesh {
+  position: absolute;
+  right: -40px; top: 50%;
+  transform: translateY(-50%);
+  width: 600px; height: 600px;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 660px;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--green);
+}
+
+.hero-title {
+  font-family: var(--font-sans);
+  font-size: clamp(42px, 5vw, 72px);
+  font-weight: 800;
+  line-height: 1.0;
+  color: var(--white);
+  margin-bottom: 24px;
+  letter-spacing: -1px;
+}
+.hero-title .accent { color: var(--green); }
+.hero-title .italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85em;
+  font-weight: 400;
+  color: var(--text2);
+}
+
+.hero-desc {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.75;
+  max-width: 500px;
+  margin-bottom: 40px;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--green);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  background: var(--green2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(88,200,100,0.25);
+}
+.btn-primary svg { transition: transform 0.2s; }
+.btn-primary:hover svg { transform: translateX(3px); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text2);
+  background: transparent;
+  border: 1px solid var(--border2);
+  padding: 12px 28px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.btn-ghost:hover { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+
+.hero-stats {
+  display: flex; gap: 48px;
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.stat-num {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-num span { color: var(--green); }
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ═══════════════════════════════════════════
+   SECTION SHARED
+═══════════════════════════════════════════ */
+section {
+  position: relative; z-index: 1;
+  padding: 100px 48px;
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-eyebrow::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: var(--green);
+}
+
+.section-title {
+  font-family: var(--font-sans);
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.section-desc {
+  color: var(--text2);
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: 520px;
+}
+
+/* ═══════════════════════════════════════════
+   TOPICS GRID
+═══════════════════════════════════════════ */
+.topics-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+.topics-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 56px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.topic-card {
+  background: var(--surface);
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+.topic-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--green);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+.topic-card:hover { background: var(--surface2); }
+.topic-card:hover::before { transform: scaleX(1); }
+
+.topic-card.featured {
+  grid-column: span 2;
+  background: var(--surface2);
+}
+.topic-card.featured::before { transform: scaleX(1); }
+
+.topic-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  margin-bottom: 20px;
+  display: block;
+}
+
+.topic-icon {
+  width: 42px; height: 42px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  font-size: 20px;
+  background: var(--green-dim);
+}
+
+.topic-title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.topic-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.topic-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.topic-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  color: var(--text3);
+}
+.topic-card:hover .topic-tag { border-color: rgba(88,200,100,0.3); color: var(--green); }
+
+.topic-arrow {
+  position: absolute;
+  bottom: 28px; right: 28px;
+  width: 28px; height: 28px;
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.topic-card:hover .topic-arrow {
+  background: var(--green);
+  border-color: var(--green);
+  transform: translate(2px, -2px);
+}
+.topic-card:hover .topic-arrow svg { color: var(--bg); }
+
+/* ═══════════════════════════════════════════
+   COMMANDS / REFERENCE TABLE
+═══════════════════════════════════════════ */
+.reference-section { background: var(--bg); }
+
+.ref-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 48px;
+  margin-top: 56px;
+}
+
+.ref-sidebar {}
+
+.ref-category {
+  list-style: none;
+}
+.ref-category li {
+  border-bottom: 1px solid var(--border);
+}
+.ref-category-btn {
+  width: 100%; text-align: left;
+  background: none; border: none;
+  padding: 12px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text2);
+  cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: color 0.2s;
+}
+.ref-category-btn:hover, .ref-category-btn.active { color: var(--green); }
+.ref-category-btn .count {
+  background: var(--green-dim);
+  color: var(--green);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.ref-table-wrap {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.ref-search {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.ref-search svg { color: var(--text3); flex-shrink: 0; }
+.ref-search input {
+  flex: 1; background: none; border: none; outline: none;
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--text);
+}
+.ref-search input::placeholder { color: var(--text3); }
+
+table.ref-table {
+  width: 100%; border-collapse: collapse;
+}
+table.ref-table thead th {
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-weight: 400;
+}
+table.ref-table tbody tr {
+  border-bottom: 1px solid rgba(88,200,100,0.05);
+  transition: background 0.15s;
+}
+table.ref-table tbody tr:hover { background: var(--green-dim); }
+table.ref-table tbody td {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  vertical-align: top;
+}
+table.ref-table tbody td:first-child {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--green);
+  white-space: nowrap;
+}
+table.ref-table tbody td:nth-child(2) {
+  color: var(--white);
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 8px; letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px;
+  font-weight: 500;
+}
+.badge-rhino { background: rgba(91,168,232,0.15); color: var(--blue); border: 1px solid rgba(91,168,232,0.25); }
+.badge-gh { background: rgba(88,200,100,0.1); color: var(--green); border: 1px solid rgba(88,200,100,0.2); }
+.badge-plugin { background: rgba(232,168,64,0.1); color: var(--amber); border: 1px solid rgba(232,168,64,0.2); }
+
+/* ═══════════════════════════════════════════
+   GH COMPONENTS
+═══════════════════════════════════════════ */
+.components-section { background: var(--bg2); border-top: 1px solid var(--border); }
+
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: 56px;
+  border: 1px solid var(--border);
+}
+
+.comp-card {
+  background: var(--surface);
+  padding: 24px 20px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.comp-card:hover { background: var(--surface2); }
+
+.comp-category {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.comp-name {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.comp-name span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--green);
+  font-weight: 400;
+  margin-left: 6px;
+}
+.comp-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.comp-io {
+  display: flex; gap: 8px;
+  flex-wrap: wrap;
+}
+.comp-io-item {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  color: var(--text3);
+}
+.comp-io-item.in { border-color: rgba(91,168,232,0.3); color: var(--blue); background: rgba(91,168,232,0.06); }
+.comp-io-item.out { border-color: rgba(88,200,100,0.3); color: var(--green); background: rgba(88,200,100,0.06); }
+
+/* ═══════════════════════════════════════════
+   TUTORIALS / LESSONS
+═══════════════════════════════════════════ */
+.tutorials-section { background: var(--bg); }
+
+.tutorials-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 48px;
+}
+
+.tut-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.tut-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+.tut-card:hover {
+  border-color: var(--green);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+.tut-thumb {
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg3);
+}
+.tut-thumb-inner {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* parametric pattern thumbnails via CSS */
+.thumb-voronoi { background: var(--bg3); }
+.thumb-attractor { background: var(--bg3); }
+.thumb-surface { background: var(--bg3); }
+.thumb-structure { background: var(--bg3); }
+.thumb-data { background: var(--bg3); }
+.thumb-fabrication { background: var(--bg3); }
+
+.tut-thumb svg {
+  width: 100%; height: 100%;
+  opacity: 0.6;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.tut-card:hover .tut-thumb svg { opacity: 0.9; transform: scale(1.05); }
+
+.tut-level {
+  position: absolute;
+  top: 12px; left: 12px;
+  font-family: var(--font-mono);
+  font-size: 8px; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+.level-beginner { background: rgba(88,200,100,0.2); color: var(--green); }
+.level-intermediate { background: rgba(232,168,64,0.2); color: var(--amber); }
+.level-advanced { background: rgba(91,168,232,0.2); color: var(--blue); }
+
+.tut-body { padding: 20px; }
+.tut-meta {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px;
+}
+.tut-type {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.tut-time {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  display: flex; align-items: center; gap: 4px;
+}
+
+.tut-title {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.tut-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+
+/* ═══════════════════════════════════════════
+   CODE SNIPPET BLOCK
+═══════════════════════════════════════════ */
+.code-section {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 64px;
+  align-items: center;
+  margin-top: 56px;
+}
+
+.code-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.code-header-left {
+  display: flex; align-items: center; gap: 8px;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-red { background: #ff5f57; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #28c840; }
+.code-filename {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 1px;
+  color: var(--text3);
+  margin-left: 8px;
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--green-dim);
+  padding: 2px 8px; border-radius: 2px;
+}
+
+pre {
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text2);
+  overflow-x: auto;
+}
+.kw { color: var(--blue); }
+.fn { color: var(--green); }
+.str { color: var(--amber); }
+.cm { color: var(--text3); font-style: italic; }
+.num { color: #f08080; }
+.type { color: #c8a8f8; }
+
+/* ═══════════════════════════════════════════
+   PLUGINS SECTION
+═══════════════════════════════════════════ */
+.plugins-section { background: var(--bg); }
+
+.plugins-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 56px;
+}
+
+.plugin-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px;
+  background: var(--surface);
+  transition: border-color 0.2s, background 0.2s;
+}
+.plugin-card:hover { border-color: var(--green); background: var(--surface2); }
+
+.plugin-logo {
+  width: 44px; height: 44px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.plugin-name {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.plugin-by {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.plugin-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.plugin-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.plugin-tag {
+  font-family: var(--font-mono);
+  font-size: 8px; letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  color: var(--text3);
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 60px 48px 32px;
+  position: relative; z-index: 1;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.footer-brand p {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.75;
+  margin-top: 12px;
+  max-width: 240px;
+}
+
+.footer-col-title {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.footer-links a {
+  font-size: 13px;
+  color: var(--text2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--green); }
+
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.footer-bottom span {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 1px;
+  color: var(--text3);
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes drawLine {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.hero-content > * {
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards;
+}
+.hero-eyebrow { animation-delay: 0.1s; }
+.hero-title   { animation-delay: 0.2s; }
+.hero-desc    { animation-delay: 0.3s; }
+.hero-actions { animation-delay: 0.4s; }
+.hero-stats   { animation-delay: 0.5s; }
+
+.hero-mesh { animation: fadeIn 1.2s 0.4s ease forwards; opacity: 0; }
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px; height: 16px;
+  background: var(--green);
+  animation: pulse 1s infinite;
+  vertical-align: middle;
+  margin-left: 3px;
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  section, .hero { padding: 80px 20px; }
+  .topics-grid { grid-template-columns: 1fr; }
+  .topic-card.featured { grid-column: span 1; }
+  .ref-layout { grid-template-columns: 1fr; }
+  .comp-grid { grid-template-columns: 1fr 1fr; }
+  .tut-grid { grid-template-columns: 1fr; }
+  .code-layout { grid-template-columns: 1fr; }
+  .plugins-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hero-stats { gap: 24px; }
+}
+</style>
 </head>
 <body>
-  <!-- 顶部导航 -->
-  <header class="header">
-    <nav class="nav">
-      <div class="logo">Rhino & Grasshopper</div>
-      <ul class="nav-links">
-        <li><a href="https://www.youtube.com/watch?v=-xXuToupPIY&list=PL48k2iKH421iToky9jG7ezc2fYg98dF16" class="cta-btn" target="_blank" style="margin-top:1rem;display:inline-block;" rel="noopener">
-            学习路线</a></li>
-        <li><a href="#resources">资料库</a></li>
-        <li><a href="#contact">联系</a></li>
+
+<div class="grid-bg"></div>
+
+<!-- ══════════════════════ NAV ══════════════════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark"></div>
+    <span class="nav-logo-text">Rhino<span>GH</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#topics" class="active">Topics</a></li>
+    <li><a href="#reference">Reference</a></li>
+    <li><a href="#components">Components</a></li>
+    <li><a href="#tutorials">Tutorials</a></li>
+    <li><a href="#plugins">Plugins</a></li>
+  </ul>
+  <button class="nav-cta">Get Started</button>
+</nav>
+
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<div class="hero">
+
+  <!-- parametric mesh SVG -->
+  <svg class="hero-mesh" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="meshGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#58c864" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#58c864" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- voronoi-like mesh -->
+    <g stroke="#58c864" stroke-width="0.8">
+      <line x1="300" y1="50" x2="450" y2="150" style="animation: drawLine 2s 0.5s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <line x1="450" y1="150" x2="520" y2="300" style="animation: drawLine 2s 0.7s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <line x1="520" y1="300" x2="440" y2="450" style="animation: drawLine 2s 0.9s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <line x1="440" y1="450" x2="280" y2="520" style="animation: drawLine 2s 1.1s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <line x1="280" y1="520" x2="130" y2="440" style="animation: drawLine 2s 1.3s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <line x1="130" y1="440" x2="80" y2="280" style="animation: drawLine 2s 1.5s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <line x1="80" y1="280" x2="160" y2="130" style="animation: drawLine 2s 1.7s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <line x1="160" y1="130" x2="300" y2="50" style="animation: drawLine 2s 1.9s ease forwards; stroke-dasharray:1000; stroke-dashoffset:1000;"/>
+      <!-- inner -->
+      <line x1="300" y1="50"  x2="300" y2="300" opacity="0.4"/>
+      <line x1="450" y1="150" x2="300" y2="300" opacity="0.4"/>
+      <line x1="520" y1="300" x2="300" y2="300" opacity="0.4"/>
+      <line x1="440" y1="450" x2="300" y2="300" opacity="0.4"/>
+      <line x1="280" y1="520" x2="300" y2="300" opacity="0.4"/>
+      <line x1="130" y1="440" x2="300" y2="300" opacity="0.4"/>
+      <line x1="80"  y1="280" x2="300" y2="300" opacity="0.4"/>
+      <line x1="160" y1="130" x2="300" y2="300" opacity="0.4"/>
+      <!-- midpoints cross connections -->
+      <line x1="375" y1="100" x2="485" y2="225" opacity="0.25"/>
+      <line x1="485" y1="225" x2="480" y2="375" opacity="0.25"/>
+      <line x1="480" y1="375" x2="360" y2="485" opacity="0.25"/>
+      <line x1="360" y1="485" x2="205" y2="480" opacity="0.25"/>
+      <line x1="205" y1="480" x2="105" y2="360" opacity="0.25"/>
+      <line x1="105" y1="360" x2="120" y2="205" opacity="0.25"/>
+      <line x1="120" y1="205" x2="230" y2="90" opacity="0.25"/>
+      <line x1="230" y1="90" x2="375" y2="100" opacity="0.25"/>
+    </g>
+    <!-- vertices -->
+    <g fill="#58c864">
+      <circle cx="300" cy="50"  r="4" opacity="0.9"/>
+      <circle cx="450" cy="150" r="4" opacity="0.9"/>
+      <circle cx="520" cy="300" r="4" opacity="0.9"/>
+      <circle cx="440" cy="450" r="4" opacity="0.9"/>
+      <circle cx="280" cy="520" r="4" opacity="0.9"/>
+      <circle cx="130" cy="440" r="4" opacity="0.9"/>
+      <circle cx="80"  cy="280" r="4" opacity="0.9"/>
+      <circle cx="160" cy="130" r="4" opacity="0.9"/>
+      <circle cx="300" cy="300" r="6" opacity="1"/>
+      <!-- midpoints -->
+      <circle cx="375" cy="100" r="2.5" opacity="0.5"/>
+      <circle cx="485" cy="225" r="2.5" opacity="0.5"/>
+      <circle cx="480" cy="375" r="2.5" opacity="0.5"/>
+      <circle cx="360" cy="485" r="2.5" opacity="0.5"/>
+      <circle cx="205" cy="480" r="2.5" opacity="0.5"/>
+      <circle cx="105" cy="360" r="2.5" opacity="0.5"/>
+      <circle cx="120" cy="205" r="2.5" opacity="0.5"/>
+      <circle cx="230" cy="90"  r="2.5" opacity="0.5"/>
+    </g>
+    <circle cx="300" cy="300" r="200" stroke="#58c864" stroke-width="0.4" fill="none" opacity="0.15"/>
+    <circle cx="300" cy="300" r="130" stroke="#58c864" stroke-width="0.3" fill="none" opacity="0.1"/>
+  </svg>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Computational Design Knowledge Base</div>
+    <h1 class="hero-title">
+      Master<br>
+      <span class="accent">Rhino &</span><br>
+      <span class="italic">Grasshopper</span>
+    </h1>
+    <p class="hero-desc">
+      The definitive technical reference for architects, designers, and engineers working with parametric and computational design workflows. From foundations to advanced scripting.
+    </p>
+    <div class="hero-actions">
+      <a href="#topics" class="btn-primary">
+        Explore Topics
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#reference" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Command Reference
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">340<span>+</span></div>
+        <div class="stat-label">Commands Documented</div>
+      </div>
+      <div>
+        <div class="stat-num">80<span>+</span></div>
+        <div class="stat-label">GH Components</div>
+      </div>
+      <div>
+        <div class="stat-num">60<span>+</span></div>
+        <div class="stat-label">Tutorials</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ TOPICS ══════════════════════ -->
+<section class="topics-section" id="topics">
+  <div class="topics-header">
+    <div>
+      <div class="section-eyebrow">Knowledge Areas</div>
+      <h2 class="section-title">Explore the full<br>design system</h2>
+    </div>
+    <p class="section-desc">From NURBS geometry fundamentals to advanced data tree manipulation — structured learning paths for every level.</p>
+  </div>
+
+  <div class="topics-grid">
+
+    <a href="#" class="topic-card featured">
+      <span class="topic-num">01 — Featured</span>
+      <div class="topic-icon">⬡</div>
+      <div class="topic-title">Grasshopper Fundamentals</div>
+      <p class="topic-desc">Master the visual programming environment: components, wires, data trees, and the core logic that powers parametric design. Learn to think algorithmically and build complex geometries from simple rules.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">Data Trees</span>
+        <span class="topic-tag">Components</span>
+        <span class="topic-tag">Parameters</span>
+        <span class="topic-tag">Debugging</span>
+        <span class="topic-tag">Internalization</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <a href="#" class="topic-card">
+      <span class="topic-num">02</span>
+      <div class="topic-icon">◎</div>
+      <div class="topic-title">NURBS Geometry</div>
+      <p class="topic-desc">Curves, surfaces, and solids. Control points, weights, degrees, and continuity. The mathematics behind Rhino's geometry engine.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">Curves</span>
+        <span class="topic-tag">Surfaces</span>
+        <span class="topic-tag">Solids</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <a href="#" class="topic-card">
+      <span class="topic-num">03</span>
+      <div class="topic-icon">△</div>
+      <div class="topic-title">Mesh Modeling</div>
+      <p class="topic-desc">Polygon meshes, subdivision, mesh editing workflows, and conversion between mesh and NURBS representations.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">SubD</span>
+        <span class="topic-tag">Weld</span>
+        <span class="topic-tag">Repair</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <a href="#" class="topic-card">
+      <span class="topic-num">04</span>
+      <div class="topic-icon">{ }</div>
+      <div class="topic-title">RhinoScript / Python</div>
+      <p class="topic-desc">Automate Rhino with Python scripting. Access the full RhinoCommon SDK, create custom commands and plugins.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">Python</span>
+        <span class="topic-tag">RhinoCommon</span>
+        <span class="topic-tag">API</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <a href="#" class="topic-card">
+      <span class="topic-num">05</span>
+      <div class="topic-icon">⊞</div>
+      <div class="topic-title">Data Trees</div>
+      <p class="topic-desc">Deep-dive into Grasshopper's tree data structures: paths, branching, grafting, flattening, and managing complex hierarchies.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">Paths</span>
+        <span class="topic-tag">Graft</span>
+        <span class="topic-tag">Flatten</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <a href="#" class="topic-card">
+      <span class="topic-num">06</span>
+      <div class="topic-icon">⟁</div>
+      <div class="topic-title">Paneling & Facades</div>
+      <p class="topic-desc">Surface paneling strategies, tiling systems, attractor-based patterns, and rationalization for fabrication.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">Paneling</span>
+        <span class="topic-tag">Patterns</span>
+        <span class="topic-tag">Fabrication</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <a href="#" class="topic-card">
+      <span class="topic-num">07</span>
+      <div class="topic-icon">↯</div>
+      <div class="topic-title">Structural Analysis</div>
+      <p class="topic-desc">Integrating structural analysis with Karamba3D and other plugins directly in your Grasshopper workflows.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">Karamba</span>
+        <span class="topic-tag">FEA</span>
+        <span class="topic-tag">Loads</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <a href="#" class="topic-card">
+      <span class="topic-num">08</span>
+      <div class="topic-icon">◈</div>
+      <div class="topic-title">Generative Design</div>
+      <p class="topic-desc">Evolutionary solvers, Galapagos, multi-objective optimization, and form-finding using computational methods.</p>
+      <div class="topic-tags">
+        <span class="topic-tag">Galapagos</span>
+        <span class="topic-tag">Optimization</span>
+        <span class="topic-tag">Kangaroo</span>
+      </div>
+      <div class="topic-arrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ REFERENCE ══════════════════════ -->
+<section class="reference-section" id="reference">
+  <div class="section-eyebrow">Quick Reference</div>
+  <h2 class="section-title">Command & Component Index</h2>
+
+  <div class="ref-layout">
+    <div class="ref-sidebar">
+      <ul class="ref-category">
+        <li><button class="ref-category-btn active">All Commands <span class="count">340</span></button></li>
+        <li><button class="ref-category-btn">Curve Tools <span class="count">68</span></button></li>
+        <li><button class="ref-category-btn">Surface Tools <span class="count">54</span></button></li>
+        <li><button class="ref-category-btn">Solid Tools <span class="count">42</span></button></li>
+        <li><button class="ref-category-btn">Mesh Tools <span class="count">36</span></button></li>
+        <li><button class="ref-category-btn">Transform <span class="count">28</span></button></li>
+        <li><button class="ref-category-btn">Analysis <span class="count">30</span></button></li>
+        <li><button class="ref-category-btn">Grasshopper <span class="count">82</span></button></li>
       </ul>
-    </nav>
-  </header>
+    </div>
 
-  <!-- 炫酷大横幅区 -->
-  <section class="hero">
-    <h1>Rhino & Grasshopper 全能学习站</h1>
-    <p>六大路径，项目驱动，海量资源，玩转参数化设计！</p>
-    <a class="cta-btn" href="#courses">立即开启学习之旅</a>
-  </section>
-
-  <main class="container">
-    <!-- 学习路线卡片区 -->
-    <section id="courses" class="section">
-      <h2 class="section-title">学习路线</h2>
-      <div class="course-grid">
-        <div class="course-card" tabindex="0">
-          <div class="course-icon">🦏</div>
-          <h3>Rhino 基础入门</h3>
-          <p>零基础也能飞！模型构建与操作全面讲解。</p>
-          <span class="difficulty beginner">入门</span>
-        </div>
-        <div class="course-card" tabindex="0">
-          <div class="course-icon">🌱</div>
-          <h3>Grasshopper 零基础</h3>
-          <p>拖拽式参数化，逻辑思维与节点实战。</p>
-          <span class="difficulty beginner">入门</span>
-        </div>
-        <div class="course-card" tabindex="0">
-          <div class="course-icon">🧩</div>
-          <h3>建模技巧进阶</h3>
-          <p>探索高级建模命令、疑难案例与效率提升。</p>
-          <span class="difficulty intermediate">进阶</span>
-        </div>
-        <div class="course-card" tabindex="0">
-          <div class="course-icon">📐</div>
-          <h3>算法与脚本开发</h3>
-          <p>Python/C# 脚本助力，开发更高效工作流。</p>
-          <span class="difficulty advanced">高级</span>
-        </div>
-        <div class="course-card" tabindex="0">
-          <div class="course-icon">🎬</div>
-          <h3>实战 - 建筑表皮</h3>
-          <p>由浅入深，带你做出炫酷表皮几何。</p>
-          <span class="difficulty intermediate">项目</span>
-        </div>
-        <div class="course-card" tabindex="0">
-          <div class="course-icon">🏆</div>
-          <h3>作品集冲刺</h3>
-          <p>案例拆解，独立创作，提升你的作品集竞争力。</p>
-          <span class="difficulty advanced">作品</span>
-        </div>
+    <div class="ref-table-wrap">
+      <div class="ref-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search commands, components, shortcuts…" id="cmdSearch">
       </div>
-    </section>
+      <table class="ref-table" id="refTable">
+        <thead>
+          <tr>
+            <th>Command / Alias</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody id="refBody">
+          <tr><td>Line</td><td>Line</td><td>Creates a line between two points</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Curve</td><td>Curve</td><td>Draws a freeform NURBS curve through control points</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Circle</td><td>Circle</td><td>Creates a circle by center and radius or 3 points</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Arc</td><td>Arc</td><td>Creates an arc by center, radius, and angle</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Polyline / PL</td><td>Polyline</td><td>Draws a series of connected line segments</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>InterpCrv</td><td>Interpolate Curve</td><td>Creates a curve interpolating through control points</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Offset</td><td>Offset Curve</td><td>Offsets a curve by a specified distance</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Fillet</td><td>Fillet Curves</td><td>Creates a fillet arc between two curves</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Trim / Tr</td><td>Trim</td><td>Trims objects at a cutting boundary</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Split</td><td>Split</td><td>Splits objects at a boundary curve or surface</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Extrude</td><td>ExtrudeCrv</td><td>Extrudes a curve along a vector or path</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Revolve</td><td>Revolve</td><td>Creates a surface by revolving a curve around an axis</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Loft</td><td>Loft</td><td>Creates a surface through a series of section curves</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Sweep1</td><td>Sweep 1 Rail</td><td>Sweeps a cross-section curve along one rail curve</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Sweep2</td><td>Sweep 2 Rails</td><td>Sweeps cross-sections along two rail curves</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>BooleanUnion</td><td>Boolean Union</td><td>Creates a union of two or more closed solids</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>BooleanDiff</td><td>Boolean Difference</td><td>Subtracts solids from a base solid</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>BooleanIntersect</td><td>Boolean Intersection</td><td>Retains only the intersecting volume of solids</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Mirror</td><td>Mirror</td><td>Creates a mirrored copy across a plane</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>ArrayPolar</td><td>Polar Array</td><td>Arrays objects around a center point</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Orient</td><td>Orient</td><td>Orients objects from one plane to another</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Flow</td><td>Flow Along Curve</td><td>Deforms objects along a spine curve</td><td><span class="badge badge-rhino">Rhino</span></td></tr>
+          <tr><td>Pt / Series</td><td>Series</td><td>Generates a numeric range with start, step, count</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>Range</td><td>Range</td><td>Divides a domain into equal segments</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>Dispatch</td><td>Dispatch</td><td>Separates list items using a boolean pattern</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>Cull Nth</td><td>Cull Nth</td><td>Removes every Nth item from a list</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>Graft</td><td>Graft Tree</td><td>Adds one branch per data item in a tree</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>Flatten</td><td>Flatten Tree</td><td>Collapses all branches into a single list</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>PathMapper</td><td>Path Mapper</td><td>Remaps data tree paths using a lexical syntax</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>Weave</td><td>Weave</td><td>Interweaves multiple lists using a pattern</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>GhPython</td><td>GH Python Script</td><td>Runs Python code with full GH/RhinoCommon access</td><td><span class="badge badge-gh">GH</span></td></tr>
+          <tr><td>Karamba</td><td>Karamba3D</td><td>Structural analysis and form-finding plugin</td><td><span class="badge badge-plugin">Plugin</span></td></tr>
+          <tr><td>Kangaroo</td><td>Kangaroo Physics</td><td>Physics-based form-finding and constraint solver</td><td><span class="badge badge-plugin">Plugin</span></td></tr>
+          <tr><td>Weaverbird</td><td>Weaverbird</td><td>Mesh subdivision and topological mesh operations</td><td><span class="badge badge-plugin">Plugin</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
-    <!-- 资源资料卡片区 -->
-    <section id="resources" class="section">
-      <h2 class="section-title">资料库</h2>
-      <div class="resources">
-        <div class="resource-card" tabindex="0">
-          <div class="resource-icon">📚</div>
-          <h4>官方文档</h4>
-          <p>Rhino & Grasshopper 官方术语、命令与内置指南</p>
-        </div>
-        <div class="resource-card" tabindex="0">
-          <div class="resource-icon">🎥</div>
-          <h4>精选视频课</h4>
-          <p>实战案例/技巧演示，快速提升操作技能</p>
-        </div>
-        <div class="resource-card" tabindex="0">
-          <div class="resource-icon">🌏</div>
-          <h4>国际社区</h4>
-          <p>参数化生态圈分析，深入交流学习与问答</p>
-        </div>
-        <div class="resource-card" tabindex="0">
-          <div class="resource-icon">🔗</div>
-          <h4>插件工具</h4>
-          <p>GH/犀牛常用插件、高效工作学习利器</p>
-        </div>
-        <div class="resource-card" tabindex="0">
-          <div class="resource-icon">🧑‍💻</div>
-          <h4>脚本资源</h4>
-          <p>实用脚本、定制化节点和自动化工具包资源</p>
-        </div>
-        <div class="resource-card" tabindex="0">
-          <div class="resource-icon">📎</div>
-          <h4>线上课程推荐</h4>
-          <p>系统学习教程、公开课合集与课件下载</p>
-        </div>
+<!-- ══════════════════════ COMPONENTS ══════════════════════ -->
+<section class="components-section" id="components">
+  <div class="section-eyebrow">Grasshopper</div>
+  <h2 class="section-title">Core Components</h2>
+  <p class="section-desc" style="margin-top:8px;">Essential GH components with inputs, outputs, and practical usage notes.</p>
+
+  <div class="comp-grid">
+    <div class="comp-card">
+      <div class="comp-category">Params / Geometry</div>
+      <div class="comp-name">Point <span>Pt</span></div>
+      <p class="comp-desc">Stores and passes point geometry through the canvas.</p>
+      <div class="comp-io">
+        <span class="comp-io-item out">P: Point</span>
       </div>
-    </section>
-  </main>
+    </div>
 
-  <!-- 页脚版权 -->
-  <footer class="header" id="contact" style="text-align:center; background:rgba(255,255,255,0.90); margin-top:2rem;">
-    <div>© 2025 Rhino & Grasshopper Learning Hub | Powered by chiaralinlin</div>
-  </footer>
+    <div class="comp-card">
+      <div class="comp-category">Curve / Primitive</div>
+      <div class="comp-name">Line SDL <span>Line</span></div>
+      <p class="comp-desc">Creates a line from start, direction, and length.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">S: Start</span>
+        <span class="comp-io-item in">D: Direction</span>
+        <span class="comp-io-item in">L: Length</span>
+        <span class="comp-io-item out">L: Line</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Surface / Freeform</div>
+      <div class="comp-name">Loft <span>Loft</span></div>
+      <p class="comp-desc">Creates a surface through a collection of curves.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">C: Curves</span>
+        <span class="comp-io-item in">O: Options</span>
+        <span class="comp-io-item out">S: Surface</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Transform / Array</div>
+      <div class="comp-name">Rectangular Array <span>RecArr</span></div>
+      <p class="comp-desc">Arrays geometry in a rectangular grid with X/Y counts.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">G: Geometry</span>
+        <span class="comp-io-item in">X: X Count</span>
+        <span class="comp-io-item in">Y: Y Count</span>
+        <span class="comp-io-item out">G: Array</span>
+        <span class="comp-io-item out">X: X Frames</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Sets / Tree</div>
+      <div class="comp-name">Path Mapper <span>Map</span></div>
+      <p class="comp-desc">Remaps tree structure using lexical path syntax expressions.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">D: Data</span>
+        <span class="comp-io-item out">D: Remapped</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Maths / Trig</div>
+      <div class="comp-name">Evaluate <span>Eval</span></div>
+      <p class="comp-desc">Evaluates a mathematical expression with variables x, y, z.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">F: Formula</span>
+        <span class="comp-io-item in">x y z: Vars</span>
+        <span class="comp-io-item out">R: Result</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Intersect / Physical</div>
+      <div class="comp-name">Mesh | Ray <span>Ray</span></div>
+      <p class="comp-desc">Shoots a ray from a point in a direction and finds mesh intersections.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">M: Mesh</span>
+        <span class="comp-io-item in">P: Point</span>
+        <span class="comp-io-item in">D: Direction</span>
+        <span class="comp-io-item out">X: Hits</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Vector / Grid</div>
+      <div class="comp-name">Populate 3D <span>Pop3D</span></div>
+      <p class="comp-desc">Randomly populates a box volume with points using a seed.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">R: Region</span>
+        <span class="comp-io-item in">N: Count</span>
+        <span class="comp-io-item in">S: Seed</span>
+        <span class="comp-io-item out">P: Points</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Display / Viz</div>
+      <div class="comp-name">Custom Preview <span>CPreview</span></div>
+      <p class="comp-desc">Renders geometry with a custom material or color shader.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">G: Geometry</span>
+        <span class="comp-io-item in">S: Shader</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Script / Logic</div>
+      <div class="comp-name">Python 3 <span>Py3</span></div>
+      <p class="comp-desc">Executes Python 3 code with scriptcontext and RhinoCommon access.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">x y z: Inputs</span>
+        <span class="comp-io-item out">a: Output</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Curve / Analysis</div>
+      <div class="comp-name">Divide Curve <span>DivCrv</span></div>
+      <p class="comp-desc">Divides a curve into N equal segments, outputting points and tangents.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">C: Curve</span>
+        <span class="comp-io-item in">N: Count</span>
+        <span class="comp-io-item out">P: Points</span>
+        <span class="comp-io-item out">T: Tangents</span>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-category">Surface / Analysis</div>
+      <div class="comp-name">Evaluate Surface <span>EvalSrf</span></div>
+      <p class="comp-desc">Evaluates a surface at UV coordinates, returning point and frame.</p>
+      <div class="comp-io">
+        <span class="comp-io-item in">S: Surface</span>
+        <span class="comp-io-item in">UV: Param</span>
+        <span class="comp-io-item out">P: Point</span>
+        <span class="comp-io-item out">N: Normal</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ TUTORIALS ══════════════════════ -->
+<section class="tutorials-section" id="tutorials">
+  <div class="tutorials-header">
+    <div>
+      <div class="section-eyebrow">Guided Learning</div>
+      <h2 class="section-title">Tutorials & Workflows</h2>
+    </div>
+    <a href="#" class="btn-ghost" style="white-space:nowrap">View All 60+ Tutorials →</a>
+  </div>
+
+  <div class="tut-grid">
+
+    <a href="#" class="tut-card">
+      <div class="tut-thumb">
+        <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="160" fill="#111410"/>
+          <g fill="none" stroke="#58c864" stroke-width="0.8" opacity="0.7">
+            <polygon points="60,20 160,80 260,20 260,140 160,80 60,140" />
+            <polygon points="110,20 210,80 310,20" />
+            <polygon points="10,20 110,80 210,20" />
+            <line x1="60" y1="20" x2="110" y2="80"/>
+            <line x1="160" y1="20" x2="210" y2="80"/>
+            <line x1="260" y1="20" x2="310" y2="80"/>
+          </g>
+          <g fill="#58c864">
+            <circle cx="60" cy="20" r="3"/><circle cx="160" cy="20" r="3"/>
+            <circle cx="260" cy="20" r="3"/><circle cx="160" cy="80" r="3"/>
+            <circle cx="60" cy="140" r="3"/><circle cx="260" cy="140" r="3"/>
+          </g>
+        </svg>
+        <span class="tut-level level-beginner">Beginner</span>
+      </div>
+      <div class="tut-body">
+        <div class="tut-meta">
+          <span class="tut-type">Grasshopper</span>
+          <span class="tut-time">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            45 min
+          </span>
+        </div>
+        <div class="tut-title">Voronoi Facade Paneling</div>
+        <p class="tut-desc">Generate a Voronoi diagram on a freeform surface and rationalize the panels for fabrication with laser cutting.</p>
+      </div>
+    </a>
+
+    <a href="#" class="tut-card">
+      <div class="tut-thumb">
+        <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="160" fill="#111410"/>
+          <defs>
+            <radialGradient id="atG" cx="50%" cy="50%" r="40%">
+              <stop offset="0%" stop-color="#58c864" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#58c864" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="160" cy="80" r="70" fill="url(#atG)"/>
+          <g fill="none" stroke="#58c864" stroke-width="0.6">
+            <circle cx="160" cy="80" r="20"/><circle cx="160" cy="80" r="40"/>
+            <circle cx="160" cy="80" r="60"/><circle cx="160" cy="80" r="80"/>
+          </g>
+          <g fill="#58c864" opacity="0.8">
+            <circle cx="120" cy="50" r="4"/><circle cx="200" cy="110" r="3"/>
+            <circle cx="140" cy="130" r="3.5"/><circle cx="220" cy="60" r="2.5"/>
+            <circle cx="90" cy="100" r="2"/><circle cx="250" cy="90" r="4"/>
+          </g>
+        </svg>
+        <span class="tut-level level-intermediate">Intermediate</span>
+      </div>
+      <div class="tut-body">
+        <div class="tut-meta">
+          <span class="tut-type">Grasshopper</span>
+          <span class="tut-time">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            60 min
+          </span>
+        </div>
+        <div class="tut-title">Attractor-Based Pattern</div>
+        <p class="tut-desc">Use point attractors to control aperture size, rotation, and density across a parametric surface grid system.</p>
+      </div>
+    </a>
+
+    <a href="#" class="tut-card">
+      <div class="tut-thumb">
+        <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="160" fill="#111410"/>
+          <g fill="none" stroke="#5ba8e8" stroke-width="0.8">
+            <path d="M 40 130 Q 80 40 120 80 Q 160 120 200 50 Q 240 10 280 70"/>
+            <path d="M 40 140 Q 80 60 120 90 Q 160 130 200 60 Q 240 20 280 80"/>
+            <path d="M 40 120 Q 80 30 120 70 Q 160 110 200 40 Q 240 0 280 60"/>
+            <path d="M 40 150 Q 80 80 120 100 Q 160 140 200 70 Q 240 30 280 90" opacity="0.4"/>
+          </g>
+          <g fill="#58c864">
+            <rect x="35" y="70" width="4" height="4"/>
+            <rect x="115" y="55" width="4" height="4"/>
+            <rect x="195" y="35" width="4" height="4"/>
+            <rect x="275" y="55" width="4" height="4"/>
+          </g>
+        </svg>
+        <span class="tut-level level-beginner">Beginner</span>
+      </div>
+      <div class="tut-body">
+        <div class="tut-meta">
+          <span class="tut-type">Rhino + GH</span>
+          <span class="tut-time">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            30 min
+          </span>
+        </div>
+        <div class="tut-title">NURBS Surface Control</div>
+        <p class="tut-desc">Understanding surface degree, CV counts, and knot vectors. How to achieve G1 and G2 continuity between surfaces.</p>
+      </div>
+    </a>
+
+    <a href="#" class="tut-card">
+      <div class="tut-thumb">
+        <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="160" fill="#111410"/>
+          <g fill="none" stroke="#58c864" stroke-width="0.7">
+            <rect x="60" y="30" width="80" height="100" rx="2"/>
+            <rect x="80" y="50" width="80" height="100" rx="2"/>
+            <rect x="100" y="70" width="80" height="100" rx="2" opacity="0.5"/>
+            <line x1="60" y1="30" x2="80" y2="50"/><line x1="140" y1="30" x2="160" y2="50"/>
+            <line x1="60" y1="130" x2="80" y2="150"/><line x1="140" y1="130" x2="160" y2="150"/>
+          </g>
+          <g fill="#58c864" opacity="0.9">
+            <circle cx="60" cy="30" r="3"/><circle cx="140" cy="30" r="3"/>
+            <circle cx="60" cy="130" r="3"/><circle cx="140" cy="130" r="3"/>
+          </g>
+        </svg>
+        <span class="tut-level level-advanced">Advanced</span>
+      </div>
+      <div class="tut-body">
+        <div class="tut-meta">
+          <span class="tut-type">Grasshopper</span>
+          <span class="tut-time">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            90 min
+          </span>
+        </div>
+        <div class="tut-title">Recursive Structure Systems</div>
+        <p class="tut-desc">Build self-similar recursive branching structures using Anemone loops and L-system logic in Grasshopper.</p>
+      </div>
+    </a>
+
+    <a href="#" class="tut-card">
+      <div class="tut-thumb">
+        <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="160" fill="#111410"/>
+          <g fill="none" stroke="#e8a840" stroke-width="0.7" opacity="0.8">
+            <path d="M50 80 L90 40 L130 70 L170 30 L210 60 L250 20 L270 80"/>
+            <path d="M50 80 L90 120 L130 90 L170 130 L210 100 L250 140 L270 80"/>
+            <line x1="50" y1="80" x2="270" y2="80" stroke-dasharray="4,4" opacity="0.3"/>
+          </g>
+          <g fill="#58c864">
+            <circle cx="90" cy="40" r="3"/><circle cx="130" cy="70" r="3"/>
+            <circle cx="170" cy="30" r="3"/><circle cx="210" cy="60" r="3"/>
+            <circle cx="250" cy="20" r="3"/>
+          </g>
+        </svg>
+        <span class="tut-level level-intermediate">Intermediate</span>
+      </div>
+      <div class="tut-body">
+        <div class="tut-meta">
+          <span class="tut-type">Python / GH</span>
+          <span class="tut-time">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            75 min
+          </span>
+        </div>
+        <div class="tut-title">Data Tree Mastery</div>
+        <p class="tut-desc">Deep dive into data tree paths, grafting vs flattening strategies, and when to use Path Mapper vs Entwine.</p>
+      </div>
+    </a>
+
+    <a href="#" class="tut-card">
+      <div class="tut-thumb">
+        <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="320" height="160" fill="#111410"/>
+          <g fill="none" stroke="#58c864" stroke-width="0.7">
+            <polyline points="80,130 80,40 120,70 120,130"/>
+            <polyline points="140,130 140,60 180,50 180,130"/>
+            <polyline points="200,130 200,80 240,40 240,130"/>
+            <line x1="60" y1="130" x2="260" y2="130"/>
+          </g>
+          <g fill="#58c864" opacity="0.9">
+            <rect x="74" y="37" width="12" height="12" rx="1"/>
+            <rect x="114" y="47" width="12" height="12" rx="1"/>
+            <rect x="174" y="37" width="12" height="12" rx="1"/>
+            <rect x="234" y="27" width="12" height="12" rx="1"/>
+          </g>
+        </svg>
+        <span class="tut-level level-advanced">Advanced</span>
+      </div>
+      <div class="tut-body">
+        <div class="tut-meta">
+          <span class="tut-type">Rhino + Karamba</span>
+          <span class="tut-time">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            120 min
+          </span>
+        </div>
+        <div class="tut-title">Structural Grid Shell Optimization</div>
+        <p class="tut-desc">Integrate Karamba3D for real-time structural feedback during form-finding of a parametric grid shell.</p>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ CODE ══════════════════════ -->
+<section class="code-section">
+  <div class="code-layout">
+    <div>
+      <div class="section-eyebrow">Scripting</div>
+      <h2 class="section-title">Python in<br>Grasshopper</h2>
+      <p style="color:var(--text2); font-size:14px; line-height:1.75; margin-top:16px; margin-bottom:24px;">
+        Extend Grasshopper's capabilities with Python scripting. Access RhinoCommon geometry types, write custom algorithms, and create bespoke components — all within a familiar programming environment.
+      </p>
+      <ul style="list-style:none; display:flex; flex-direction:column; gap:12px;">
+        <li style="display:flex; gap:12px; align-items:flex-start;">
+          <span style="color:var(--green); font-size:18px; line-height:1; flex-shrink:0;">→</span>
+          <span style="color:var(--text2); font-size:13px; line-height:1.6;"><strong style="color:var(--white);">Full RhinoCommon Access</strong> — All geometry types, transformations, and analysis functions available directly.</span>
+        </li>
+        <li style="display:flex; gap:12px; align-items:flex-start;">
+          <span style="color:var(--green); font-size:18px; line-height:1; flex-shrink:0;">→</span>
+          <span style="color:var(--text2); font-size:13px; line-height:1.6;"><strong style="color:var(--white);">Multiple Inputs/Outputs</strong> — Define custom I/O types: point, curve, surface, number, boolean, and more.</span>
+        </li>
+        <li style="display:flex; gap:12px; align-items:flex-start;">
+          <span style="color:var(--green); font-size:18px; line-height:1; flex-shrink:0;">→</span>
+          <span style="color:var(--text2); font-size:13px; line-height:1.6;"><strong style="color:var(--white);">Python 3 in Rhino 8</strong> — Full Python 3 support with numpy, scipy, and other libraries via pip.</span>
+        </li>
+      </ul>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <span class="code-filename">attractor_grid.py</span>
+        </div>
+        <span class="code-lang">Python 3</span>
+      </div>
+<pre><span class="cm"># Attractor-based point grid with falloff</span>
+<span class="kw">import</span> rhinoscriptsyntax <span class="kw">as</span> rs
+<span class="kw">import</span> Rhino.Geometry <span class="kw">as</span> rg
+<span class="kw">import</span> math
+
+<span class="cm"># Inputs: pts (point list), attractor (point),</span>
+<span class="cm">#         max_r (number), min_r (number)</span>
+
+<span class="type">results</span> = []
+<span class="type">radii</span>   = []
+
+<span class="kw">for</span> pt <span class="kw">in</span> pts:
+    <span class="cm"># distance from attractor</span>
+    dist = pt.DistanceTo(attractor)
+
+    <span class="cm"># normalize and invert (closer = larger)</span>
+    t = <span class="num">1.0</span> - min(<span class="num">1.0</span>, dist / <span class="num">50.0</span>)
+
+    <span class="cm"># smooth ease-in-out</span>
+    t_smooth = t * t * (<span class="num">3</span> - <span class="num">2</span> * t)
+
+    radius = min_r + (max_r - min_r) * t_smooth
+
+    <span class="cm"># create circle at point in XY plane</span>
+    plane  = rg.Plane(pt, rg.Vector3d.<span class="fn">ZAxis</span>)
+    circle = rg.Circle(plane, radius)
+
+    results.<span class="fn">append</span>(circle.<span class="fn">ToNurbsCurve</span>())
+    radii.<span class="fn">append</span>(radius)
+
+<span class="cm"># Outputs: a (curves), b (radius values)</span>
+a = results
+b = radii</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ PLUGINS ══════════════════════ -->
+<section class="plugins-section" id="plugins">
+  <div class="section-eyebrow">Ecosystem</div>
+  <h2 class="section-title">Essential Plugins</h2>
+  <p class="section-desc" style="margin-top:8px;">The Rhino/GH ecosystem is vast. These are the most widely used plugins across architecture and computational design practice.</p>
+
+  <div class="plugins-grid">
+    <div class="plugin-card">
+      <div class="plugin-logo" style="background:rgba(88,200,100,0.1);">🦗</div>
+      <div class="plugin-name">Kangaroo Physics</div>
+      <div class="plugin-by">Daniel Piker · Physics solver</div>
+      <p class="plugin-desc">Live physics simulation for form-finding, constraint-based modeling, elastic systems, and collision detection. Indispensable for structural form-finding.</p>
+      <div class="plugin-tags">
+        <span class="plugin-tag">Form Finding</span>
+        <span class="plugin-tag">Physics</span>
+        <span class="plugin-tag">Free</span>
+      </div>
+    </div>
+    <div class="plugin-card">
+      <div class="plugin-logo" style="background:rgba(232,100,80,0.1);">🏗️</div>
+      <div class="plugin-name">Karamba 3D</div>
+      <div class="plugin-by">Preisinger · Structural FEA</div>
+      <p class="plugin-desc">Parametric structural analysis integrated into the GH canvas. Analyze beam, shell, and cross-section systems with real-time feedback during design.</p>
+      <div class="plugin-tags">
+        <span class="plugin-tag">Structural</span>
+        <span class="plugin-tag">FEA</span>
+        <span class="plugin-tag">Commercial</span>
+      </div>
+    </div>
+    <div class="plugin-card">
+      <div class="plugin-logo" style="background:rgba(91,168,232,0.1);">🌐</div>
+      <div class="plugin-name">Weaverbird</div>
+      <div class="plugin-by">Giulio Piacentino · Topology</div>
+      <p class="plugin-desc">Topological mesh editing: subdivision, offsets, picture frames, and connectivity operations. Essential for complex mesh-based architecture.</p>
+      <div class="plugin-tags">
+        <span class="plugin-tag">Mesh</span>
+        <span class="plugin-tag">Subdivision</span>
+        <span class="plugin-tag">Free</span>
+      </div>
+    </div>
+    <div class="plugin-card">
+      <div class="plugin-logo" style="background:rgba(180,100,220,0.1);">⚡</div>
+      <div class="plugin-name">Ladybug Tools</div>
+      <div class="plugin-by">Ladybug Tools · Environmental</div>
+      <p class="plugin-desc">Climate-based environmental analysis: solar radiation, wind, daylight, and energy analysis integrated into parametric workflows.</p>
+      <div class="plugin-tags">
+        <span class="plugin-tag">Environmental</span>
+        <span class="plugin-tag">Solar</span>
+        <span class="plugin-tag">Free / OS</span>
+      </div>
+    </div>
+    <div class="plugin-card">
+      <div class="plugin-logo" style="background:rgba(232,168,64,0.1);">🔁</div>
+      <div class="plugin-name">Anemone</div>
+      <div class="plugin-by">Co-de-iT · Loops</div>
+      <p class="plugin-desc">Adds true loop and recursion capabilities to Grasshopper, enabling iterative algorithms, growth simulations, and L-systems that are impossible with standard GH.</p>
+      <div class="plugin-tags">
+        <span class="plugin-tag">Loops</span>
+        <span class="plugin-tag">Recursion</span>
+        <span class="plugin-tag">Free</span>
+      </div>
+    </div>
+    <div class="plugin-card">
+      <div class="plugin-logo" style="background:rgba(88,200,100,0.1);">📐</div>
+      <div class="plugin-name">LunchBox</div>
+      <div class="plugin-by">CORE Studio · Paneling</div>
+      <p class="plugin-desc">Paneling tools, special surface generators, spaceframe structures, and data management utilities. Widely used in professional practice.</p>
+      <div class="plugin-tags">
+        <span class="plugin-tag">Paneling</span>
+        <span class="plugin-tag">Structures</span>
+        <span class="plugin-tag">Free</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo" style="display:inline-flex; margin-bottom:4px;">
+        <div class="nav-logo-mark"></div>
+        <span class="nav-logo-text">Rhino<span>GH</span></span>
+      </a>
+      <p>The community knowledge base for Rhino3D and Grasshopper — built for architects, designers, and computational design engineers.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Rhino</div>
+      <ul class="footer-links">
+        <li><a href="#">Modeling Basics</a></li>
+        <li><a href="#">NURBS Geometry</a></li>
+        <li><a href="#">Rendering</a></li>
+        <li><a href="#">Fabrication</a></li>
+        <li><a href="#">RhinoScript</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Grasshopper</div>
+      <ul class="footer-links">
+        <li><a href="#">GH Fundamentals</a></li>
+        <li><a href="#">Data Trees</a></li>
+        <li><a href="#">Python Scripting</a></li>
+        <li><a href="#">Plugins</a></li>
+        <li><a href="#">Advanced Workflows</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Resources</div>
+      <ul class="footer-links">
+        <li><a href="#">Command Reference</a></li>
+        <li><a href="#">GH Components</a></li>
+        <li><a href="#">Tutorials</a></li>
+        <li><a href="#">Community Forum</a></li>
+        <li><a href="#">Changelog</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 RhinoGH Knowledge Base</span>
+    <span>Rhino® is a trademark of Robert McNeel &amp; Associates</span>
+  </div>
+</footer>
+
+<script>
+// ── Search filter ──
+const searchInput = document.getElementById('cmdSearch');
+const rows = document.querySelectorAll('#refBody tr');
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase();
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+});
+
+// ── Category filter ──
+document.querySelectorAll('.ref-category-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ref-category-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const label = btn.textContent.trim().toLowerCase();
+
+    rows.forEach(row => {
+      const badges = row.querySelectorAll('.badge');
+      let show = false;
+
+      if (label.startsWith('all')) {
+        show = true;
+      } else if (label.startsWith('grasshopper')) {
+        badges.forEach(b => { if (b.classList.contains('badge-gh') || b.classList.contains('badge-plugin')) show = true; });
+      } else {
+        show = true; // for demo, show all for subcategory clicks
+      }
+
+      row.style.display = show ? '' : 'none';
+    });
+  });
+});
+
+// ── Scroll reveal ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.topic-card, .comp-card, .tut-card, .plugin-card').forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = `opacity 0.5s ${i * 0.06}s ease, transform 0.5s ${i * 0.06}s ease`;
+  observer.observe(el);
+});
+
+// ── Nav active on scroll ──
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 100) cur = sec.id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+});
+</script>
 </body>
 </html>
